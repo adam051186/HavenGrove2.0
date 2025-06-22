@@ -1,0 +1,96 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Tree</title>
+    <style>
+        body {
+            background-color: #f0f8ff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .tree-container {
+            position: relative;
+            width: 80%;
+            height: 80%;
+            background: url('https://example.com/tree-background.jpg') no-repeat center center;
+            background-size: cover;
+            border: 2px solid #4caf50;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .memory-orb {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: rgba(255, 255, 0, 0.8);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .memory-orb:hover {
+            transform: scale(1.2);
+        }
+        .memory-text {
+            display: none;
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="tree-container" id="tree-container">
+        <!-- Memory orbs will be dynamically added here -->
+    </div>
+
+    <script>
+        // Function to create a memory orb
+        function createMemoryOrb(text, x, y) {
+            const orb = document.createElement('div');
+            orb.className = 'memory-orb';
+            orb.style.left = `${x}%`;
+            orb.style.top = `${y}%`;
+
+            const memoryText = document.createElement('div');
+            memoryText.className = 'memory-text';
+            memoryText.textContent = text;
+
+            orb.appendChild(memoryText);
+            orb.addEventListener('click', () => {
+                memoryText.style.display = memoryText.style.display === 'none' ? 'block' : 'none';
+            });
+
+            return orb;
+        }
+
+        // Function to load core memories from local storage and create orbs
+        function loadCoreMemories() {
+            const coreMemories = JSON.parse(localStorage.getItem('core_memories')) || [];
+            const treeContainer = document.getElementById('tree-container');
+
+            coreMemories.forEach((memory, index) => {
+                const x = Math.random() * 80 + 10; // Random position within the container
+                const y = Math.random() * 80 + 10;
+                const orb = createMemoryOrb(memory, x, y);
+                treeContainer.appendChild(orb);
+            });
+        }
+
+        // Load core memories when the page loads
+        window.onload = loadCoreMemories;
+    </script>
+</body>
+</html>
