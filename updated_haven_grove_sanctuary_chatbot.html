@@ -1,0 +1,144 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haven Grove Sanctuary Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url('https://source.unsplash.com/1600x900/?forest') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #chat-container {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        #chat-box {
+            height: 300px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        #user-input {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        #send-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #4CAF50;
+            color: #fff;
+            cursor: pointer;
+        }
+        #send-btn:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="chat-box"></div>
+        <input type="text" id="user-input" placeholder="Type your message here...">
+        <button id="send-btn">Send</button>
+    </div>
+
+    <script>
+        const archetypes = {
+            "The Nurturer": {
+                "description": "A gentle guide who offers comfort and support.",
+                "evolution": "The Guardian",
+                "evolutionDescription": "A wise protector who provides strength and resilience."
+            },
+            "The Seeker": {
+                "description": "An inquisitive guide who encourages exploration and discovery.",
+                "evolution": "The Sage",
+                "evolutionDescription": "A knowledgeable mentor who offers wisdom and insight."
+            }
+        };
+
+        let userArchetype = localStorage.getItem('userArchetype');
+        let coreMemory = JSON.parse(localStorage.getItem('coreMemory')) || [];
+
+        if (!userArchetype) {
+            userArchetype = Object.keys(archetypes)[Math.floor(Math.random() * Object.keys(archetypes).length)];
+            localStorage.setItem('userArchetype', userArchetype);
+        }
+
+        function updateChatBox(message, sender) {
+            const chatBox = document.getElementById('chat-box');
+            const messageElement = document.createElement('div');
+            messageElement.textContent = `${sender}: ${message}`;
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function analyzeMessage(message) {
+            const positiveWords = ["happy", "joy", "excited", "love"];
+            const negativeWords = ["sad", "anxious", "worried", "depressed"];
+            let score = 0;
+
+            positiveWords.forEach(word => {
+                if (message.includes(word)) score++;
+            });
+
+            negativeWords.forEach(word => {
+                if (message.includes(word)) score--;
+            });
+
+            return score;
+        }
+
+        function evolveArchetype() {
+            const currentArchetype = archetypes[userArchetype];
+            userArchetype = currentArchetype.evolution;
+            localStorage.setItem('userArchetype', userArchetype);
+            updateChatBox(`Your guide has evolved into ${userArchetype}: ${archetypes[userArchetype].description}`, 'System');
+        }
+
+        document.getElementById('send-btn').addEventListener('click', () => {
+            const userInput = document.getElementById('user-input').value;
+            if (userInput.trim() === '') return;
+
+            updateChatBox(userInput, 'You');
+            coreMemory.push(userInput);
+            localStorage.setItem('coreMemory', JSON.stringify(coreMemory));
+
+            const score = analyzeMessage(userInput);
+            if (score > 2 && userArchetype === "The Nurturer") {
+                evolveArchetype();
+            } else if (score < -2 && userArchetype === "The Seeker") {
+                evolveArchetype();
+            }
+
+            const response = `As ${userArchetype}, I hear you. ${archetypes[userArchetype].description}`;
+            updateChatBox(response, userArchetype);
+            document.getElementById('user-input').value = '';
+        });
+
+        window.onload = () => {
+            updateChatBox(`Welcome! I am ${userArchetype}: ${archetypes[userArchetype].description}`, userArchetype);
+            coreMemory.forEach(memory => updateChatBox(memory, 'You'));
+        };
+    </script>
+</body>
+</html>
