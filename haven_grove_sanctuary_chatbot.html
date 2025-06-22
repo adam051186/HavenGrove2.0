@@ -1,0 +1,119 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haven Grove Sanctuary Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url('https://example.com/forest-background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .chat-container {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .chat-bubble {
+            background: #4CAF50;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 5px 0;
+        }
+        .user-bubble {
+            background: #555;
+            text-align: right;
+        }
+        .input-container {
+            display: flex;
+            margin-top: 10px;
+        }
+        .input-container input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+        }
+        .input-container button {
+            padding: 10px;
+            border: none;
+            background: #4CAF50;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container" id="chat-container">
+        <div class="chat-bubble">Welcome to Haven Grove Sanctuary. I am your AI guide.</div>
+        <div class="chat-bubble" id="archetype-bubble"></div>
+    </div>
+    <div class="input-container">
+        <input type="text" id="user-input" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        let archetype = localStorage.getItem('archetype');
+        if (!archetype) {
+            const archetypes = {
+                "The Nurturer": "A gentle guide who helps you find comfort and peace.",
+                "The Seeker": "An adventurous spirit who encourages exploration and growth.",
+                "The Sage": "A wise mentor who offers insight and clarity.",
+                "The Guardian": "A protective figure who provides strength and resilience."
+            };
+            const keys = Object.keys(archetypes);
+            archetype = keys[Math.floor(Math.random() * keys.length)];
+            localStorage.setItem('archetype', archetype);
+            document.getElementById('archetype-bubble').innerText = `Your archetype is ${archetype}: ${archetypes[archetype]}`;
+        } else {
+            document.getElementById('archetype-bubble').innerText = `Welcome back! Your archetype is ${archetype}.`;
+        }
+
+        function sendMessage() {
+            const userInput = document.getElementById('user-input').value;
+            if (userInput.trim() === '') return;
+
+            const userBubble = document.createElement('div');
+            userBubble.className = 'chat-bubble user-bubble';
+            userBubble.innerText = userInput;
+            document.getElementById('chat-container').appendChild(userBubble);
+
+            const reply = generateReply(userInput);
+            const botBubble = document.createElement('div');
+            botBubble.className = 'chat-bubble';
+            botBubble.innerText = reply;
+            document.getElementById('chat-container').appendChild(botBubble);
+
+            storeCoreMemory(userInput);
+            document.getElementById('user-input').value = '';
+        }
+
+        function generateReply(userMessage) {
+            if (userMessage.toLowerCase().includes("help")) {
+                return "I'm here to help. How can I assist you today?";
+            } else {
+                return "Thank you for sharing. I'm here with you.";
+            }
+        }
+
+        function storeCoreMemory(message) {
+            let coreMemory = JSON.parse(localStorage.getItem('core_memory')) || [];
+            coreMemory.push(message);
+            localStorage.setItem('core_memory', JSON.stringify(coreMemory));
+        }
+    </script>
+</body>
+</html>
